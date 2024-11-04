@@ -104,11 +104,42 @@ def start_text_scroller_with_controls(initial_scroll_speed=50):
     pause_button.clicked.connect(toggle_pause_resume)
 
 
+
     # Settings dialog
     def open_settings_dialog():
         settings_dialog = QDialog()
         settings_dialog.setWindowTitle("Settings")
         settings_layout = QVBoxLayout(settings_dialog)
+
+        def create_about_dialog():
+            about_dialog = QDialog()
+            about_dialog.setWindowTitle("About Auto Text Scroller")
+        
+            # Set up layout and content
+            layout = QVBoxLayout()
+            about_text = """
+            <h2>Thank you for using Auto Text Scroller!</h2>
+            <p><strong>Author:</strong> Neil Dave</p>
+            
+            <h3>Licensing</h3>
+            <p>&copy; 2024 Neil Dave. All Rights Reserved.<br>
+            Licensed under the Apache-2.0 license.</p>
+            
+            <h3>Support</h3>
+            <p>If you’d like to support this software and future projects, please consider <a href='https://ko-fi.com/neilkdave'>buying me a coffee or donating at https://ko-fi.com/neilkdave</a>.</p>
+            """
+            about_label = QLabel(about_text)
+            about_label.setOpenExternalLinks(True)  # Allows the link to be clickable
+            about_label.setWordWrap(True)
+            layout.addWidget(about_label)
+        
+            about_dialog.setLayout(layout)
+            return about_dialog
+
+        # Add the About button
+        about_button = QPushButton("About...")
+        about_button.clicked.connect(lambda: create_about_dialog().exec_())
+        settings_layout.addWidget(about_button)
 
         # Font selection button
         def change_font():
