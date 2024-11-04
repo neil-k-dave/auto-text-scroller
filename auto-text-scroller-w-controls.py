@@ -207,4 +207,4 @@ def start_text_scroller_with_controls(initial_scroll_speed=50):
     sys.exit(app.exec_())
 
 # Example usage:
-# start_text_scroller_with_controls("path/to/your/textfile.txt", initial_scroll_speed=50)
+start_text_scroller_with_controls()
