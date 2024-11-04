@@ -1,14 +1,13 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QTextEdit, QSlider, QLabel, QPushButton, QFileDialog, QDialog, QFontDialog, QColorDialog
 from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QColor, QFont
 
 def start_text_scroller_with_controls(initial_scroll_speed=50):
     """
     Starts a text scroller with speed control slider and pause/resume button.
     
     Parameters:
-        text_file_path (str): Path to the text file to display and scroll.
         initial_scroll_speed (int): Initial scrolling speed in milliseconds.
     """
 
@@ -26,18 +25,19 @@ def start_text_scroller_with_controls(initial_scroll_speed=50):
     text_display.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
     layout.addWidget(text_display)
 
-    # Load text content
-    # try:
-    #     with open(text_file_path, 'r', encoding='utf-8') as file:
-    #         text_data = file.read()
-    #         text_display.setPlainText(text_data)  # Load text into display
-    # except Exception as e:
-    #     print(f"Error loading text file: {e}")
-    #     return
 
     # Timer for automatic scrolling
     scroll_timer = QTimer()
     scroll_timer.setInterval(initial_scroll_speed)
+
+    # Default font settings
+    default_font = QFont("Arial", 12)
+    default_color = QColor("black")
+
+    text_display.setFont(default_font)
+    text_display.setTextColor(default_color)
+ 
+
 
     def load_text_file():
 
@@ -104,7 +104,6 @@ def start_text_scroller_with_controls(initial_scroll_speed=50):
     pause_button.clicked.connect(toggle_pause_resume)
 
 
-
     # Settings dialog
     def open_settings_dialog():
         settings_dialog = QDialog()
@@ -125,11 +124,25 @@ def start_text_scroller_with_controls(initial_scroll_speed=50):
         def change_font_color():
             color = QColorDialog.getColor()
             if color.isValid():
-                text_display.setTextColor(color)
-
+                text_content = text_display.toPlainText()
+                scroll_pos = text_display.verticalScrollBar().value()
+                text_display.setTextColor(color)  # Apply the color to the selected text
+                text_display.setPlainText(text_content)
+                text_display.verticalScrollBar().setValue(scroll_pos)
+                
         color_button = QPushButton("Change Font Color")
         color_button.clicked.connect(change_font_color)
         settings_layout.addWidget(color_button)
+        
+        # Reset Default Properties
+        def reset_default_settings():
+            text_content = text_display.toPlainText()
+            scroll_pos = text_display.verticalScrollBar().value()
+            text_display.setFont(default_font)
+            text_display.setTextColor(default_color)
+            speed_slider.setValue(initial_scroll_speed)
+            text_display.setPlainText(text_content)
+            text_display.verticalScrollBar().setValue(scroll_pos)
 
         # "Paste in own text" button
         def open_paste_text_dialog():
@@ -138,6 +151,7 @@ def start_text_scroller_with_controls(initial_scroll_speed=50):
             paste_layout = QVBoxLayout(paste_dialog)
             paste_text_edit = QTextEdit()
             paste_layout.addWidget(paste_text_edit)
+
 
             # Apply pasted text to the main text display
             def apply_pasted_text():
@@ -155,8 +169,16 @@ def start_text_scroller_with_controls(initial_scroll_speed=50):
         paste_button.clicked.connect(open_paste_text_dialog)
         settings_layout.addWidget(paste_button)
 
+        # Reset font properties button
+        reset_button = QPushButton("Reset Default Settings")
+        reset_button.clicked.connect(reset_default_settings)
+        settings_layout.addWidget(reset_button)
+
         # Display the settings dialog
         settings_dialog.exec_()
+        
+
+
 
    
 
